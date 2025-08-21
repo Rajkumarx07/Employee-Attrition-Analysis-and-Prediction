@@ -5,12 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
-# ---------------- File paths ----------------
 CSV = r"D:\GUVI\Employee Project\Employee-Attrition - Employee-Attrition.csv"
 ATTRITION_PKL = r"C:\Users\Rajkumar\Guvi\Projects\Project_3\attrition_model.pkl"
 PERFORMANCE_PKL = r"C:\Users\Rajkumar\Guvi\Projects\Project_3\performance_model.pkl"
 
-# ---------------- Selected Features for Performance Model ----------------
 selected_features = [
     "MonthlyIncome", "JobRole", "TotalWorkingYears", "HourlyRate", 
     "YearsAtCompany", "TrainingTimesLastYear", "MonthlyRate", "BusinessTravel", 
@@ -19,25 +17,23 @@ selected_features = [
     "YearsSinceLastPromotion", "YearsWithCurrManager"
 ]
 
-# ---------------- Load dataset ----------------
 df = pd.read_csv(CSV)
 
-# ---------------- Encode JobRole ----------------
 le_jobrole = LabelEncoder()
 df["JobRole_encoded"] = le_jobrole.fit_transform(df["JobRole"])
 
-# ---------------- Load models ----------------
+
 with open(ATTRITION_PKL, "rb") as f:
     attrition_model = pickle.load(f)
 
 with open(PERFORMANCE_PKL, "rb") as f:
     performance_model = pickle.load(f)
 
-# ---------------- Sidebar ----------------
+
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Introduction", "Dataset & EDA", "Prediction"])
 
-# ---------------- Page 1 ----------------
+
 if page == "Introduction":
     st.title("Project Introduction: Employee Attrition Analysis and Prediction")
     st.write("""
@@ -63,7 +59,7 @@ if page == "Introduction":
     workforce satisfaction by transforming raw employee data into meaningful insights and predictive intelligence. 
     """)
 
-# ---------------- Page 2 ----------------
+
 elif page == "Dataset & EDA":
     st.title("Dataset Overview")
 
@@ -96,11 +92,11 @@ elif page == "Dataset & EDA":
         sns.countplot(x="PerformanceRating", data=df, ax=ax)
         st.pyplot(fig)
 
-# ---------------- Page 3 ----------------
+
 elif page == "Prediction":
     st.title("Make Predictions")
 
-    # -------- Attrition --------
+
     st.header("Attrition Prediction (Logistic Regression)")
     age = st.number_input("Age", min_value=18, max_value=60, value=30, key="attr_age")
     income = st.number_input("Monthly Income", min_value=1000, max_value=50000, value=5000, key="attr_income")
@@ -113,7 +109,7 @@ elif page == "Prediction":
         st.success(f"Attrition Prediction: {'Yes' if pred == 1 else 'No'}")
 
     st.markdown("---")
-    # -------- Performance Rating --------
+
     st.header("Performance Rating Prediction (Random Forest)")
 
     monthly_income = st.number_input("Monthly Income", min_value=1000, max_value=50000, value=5000, key="perf_income")
@@ -135,12 +131,12 @@ elif page == "Prediction":
     years_manager = st.number_input("Years With Current Manager", min_value=0, max_value=20, value=3, key="perf_manager")
 
     if st.button("Predict Performance Rating"):
-    # Encode categorical features
+
         jobrole_encoded = le_jobrole.transform([jobrole])[0]
         bt_encoded = pd.factorize(df["BusinessTravel"])[0][list(df["BusinessTravel"].unique()).index(business_travel)]
         attrition_encoded = 1 if attrition == "Yes" else 0
 
-    # Create input in exact order of selected_features
+
         sample = pd.DataFrame([[monthly_income, jobrole_encoded, total_years, hourly_rate,
                                 years_company, training_times, monthly_rate, bt_encoded,
                                 job_involvement, work_life, relationship_satisfaction, attrition_encoded,
